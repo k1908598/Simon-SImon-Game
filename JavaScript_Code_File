@@ -1,0 +1,105 @@
+// starting - show animation create a sequence random
+// (number 1-10) bA is forward, bB is backward photon
+// move to correct position, press bAB to submit if
+// correct, then beep beautifully if wrong, then beep
+// ugly and score zeros if combo is right, then
+// score++
+input.buttonA.onEvent(ButtonEvent.Click, function () {
+    light.clear()
+    console.log("A is clicked")
+    light.photonForward(1)
+    position += 1
+    position = position % 10
+    console.log(position)
+})
+input.buttonB.onEvent(ButtonEvent.Click, function () {
+    light.clear()
+    console.log("B is clicekd")
+    light.photonForward(-1)
+    position += -1
+    position %= 10
+    if (position < 0) {
+        position = 10 + position
+    }
+    console.log(position)
+})
+input.buttonsAB.onEvent(ButtonEvent.Click, function () {
+    console.log("submit")
+    console.log(position)
+    checkInput(position)
+})
+function start() {
+    light.showAnimation(light.rainbowAnimation, 500)
+    pause(200)
+    light.clear()
+}
+// function the
+function createSequence() {
+    // the length of the sequence is according to score
+    // sequence reset list.pop()
+    list = []
+    if (score == 0) {
+        list.push(Math.floor(Math.random() * 10))
+    } else {
+        for (let i = 0; i <= score; i++) {
+            list.push(Math.floor(Math.random() * 10))
+        }
+    }
+    console.log("this is score: " + score)
+    console.log(list)
+}
+// display after player pressed each button, should be
+// in a loop
+function checkInput(numberInput: number) {
+    if (index == list.length - 1) {
+        lastOne = true
+    }
+    // this function only checks one input (one by one)
+    if (numberInput == list[index]) {
+        index += 1
+        console.log("this is correcct!")
+        music.magicWand.play()
+        light.clear()
+        // create sequence
+        if (lastOne) {
+            console.log("This combo is correct! level up")
+            score += 1
+            createSequence()
+            displaySequence()
+            index = 0
+        }
+    } else {
+        index = 0
+        console.log("this is wrong. score zeroes")
+        music.jumpDown.play()
+        // sequence reset and create sequence
+        createSequence()
+        displaySequence()
+    }
+    lastOne = false
+}
+// second displayed function
+function displaySequence() {
+    console.log("display sequence")
+    for (let j = 0; j <= list.length - 1; j++) {
+        console.log("some sequence")
+        light.setPixelColor(list[j], 0xff0000)
+        // light.setPixelColor(list[j],0000FF)
+        pause(700)
+        light.clear()
+        light.setPhotonPosition(position)
+    }
+}
+let lastOne = false
+let index = 0
+let score = 0
+let list: number[] = []
+let inputSequence = []
+let position = 0
+position = 1
+list = [1]
+// main starts
+start()
+pause(250)
+createSequence()
+displaySequence()
